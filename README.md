@@ -12,54 +12,21 @@ The project integrates **MTCNN face detection**, **ResNet50 emotion classificati
 
 ---
 
+# Live Demo
+
+Try the deployed application here:
+
+https://huggingface.co/spaces/Aryan2301/Face_Emotion_Recognition_System
+
+Upload an image containing a face and the system will automatically detect the face and predict the emotion.
+
+---
+
 # Project Overview
 
 This project builds an end-to-end **AI pipeline for emotion recognition from facial images**.
 
-The system automatically:
-
-1. Detects faces in images  
-2. Extracts the facial region  
-3. Preprocesses the image for the neural network  
-4. Predicts the emotional expression  
-
-Supported emotion classes:
-
-- Surprise  
-- Fear  
-- Disgust  
-- Happy  
-- Sad  
-- Anger  
-- Neutral  
-
----
-
-# Demo
-
-You can run the interactive interface locally to test the model.
-
-The application allows users to upload an image and instantly receive emotion predictions along with probability distributions.
-
----
-
-# Dataset
-
-The model is trained using the **RAF-DB (Real-world Affective Faces Database)**.
-
-Dataset link:
-
-https://www.kaggle.com/datasets/shuvoalok/raf-db-dataset
-
-RAF-DB is a widely used dataset for facial expression recognition containing thousands of real-world images with diverse expressions, lighting conditions, and head poses.
-
----
-
-# Model Architecture
-
-The emotion recognition model uses **ResNet50**, a deep convolutional neural network architecture widely used for computer vision tasks.
-
-Pipeline architecture:
+Pipeline:
 
 Face Image  
 ↓  
@@ -71,52 +38,156 @@ ResNet50 Model
 ↓  
 Emotion Prediction
 
-Key components:
+The system predicts the following **7 emotion classes**:
 
-Face Detection  
-MTCNN is used to detect faces and extract the facial region before feeding the image to the model.
+- Surprise  
+- Fear  
+- Disgust  
+- Happy  
+- Sad  
+- Anger  
+- Neutral  
 
-Preprocessing  
-Faces are resized to **224 × 224 pixels** and preprocessed using the ResNet50 preprocessing pipeline.
+---
 
-Classification  
-The processed image is passed to the trained ResNet50 model which outputs probabilities for each emotion class.
+# Dataset
+
+The model was trained using the **RAF-DB (Real-world Affective Faces Database)**.
+
+Dataset link:
+
+https://www.kaggle.com/datasets/shuvoalok/raf-db-dataset
+
+RAF-DB contains thousands of facial images collected from the internet with diverse:
+
+- expressions
+- lighting conditions
+- head poses
+- occlusions
+
+It is widely used for **facial expression recognition research**.
+
+---
+
+# Experiments
+
+Multiple deep learning architectures and training strategies were explored.
+
+All experiments were **tracked using MLflow**, allowing systematic comparison of models.
+
+### Experiment Notebooks
+
+| Notebook | Description |
+|--------|--------|
+| `custom-cnn-model-mlflow.ipynb` | Baseline CNN architecture |
+| `convnext-tiny-model-mlflow.ipynb` | ConvNeXt Tiny transfer learning experiment |
+| `efficient-net-v2-s-class-weigths.ipynb` | EfficientNetV2-S with class weights |
+| `efficient-net-v2-s-mixup-cutmix.ipynb` | EfficientNetV2-S with MixUp and CutMix |
+| `resnet50-model-class-weigths.ipynb` | ResNet50 with class weights |
+| `resnet50-model-cutmix-mixup.ipynb` | ResNet50 with MixUp and CutMix |
+
+Each experiment logged:
+
+- training metrics
+- validation metrics
+- hyperparameters
+- model artifacts
+- experiment runs
+
+using **MLflow experiment tracking**.
+
+---
+
+# Best Model
+
+The best performing model was:
+
+**ResNet50 trained with MixUp + CutMix augmentation**
+
+### Overall Performance
+
+| Metric | Score |
+|------|------|
+| Train Accuracy | **0.9172** |
+| Validation Accuracy | **0.8644** |
+| Test Accuracy | **0.8673** |
+| ROC-AUC (Macro) | **0.9690** |
+| ROC-AUC (Micro) | **0.9805** |
+
+---
+
+### ROC-AUC per Emotion Class
+
+| Emotion | ROC-AUC |
+|------|------|
+| Surprise | 0.9859 |
+| Fear | 0.9297 |
+| Disgust | 0.9540 |
+| Happy | 0.9865 |
+| Sad | 0.9780 |
+| Anger | 0.9805 |
+| Neutral | 0.9686 |
+
+---
+
+# Model Architecture
+
+The deployed model uses **ResNet50 Transfer Learning**.
+
+Architecture:
+
+Input Image (224×224)  
+↓  
+ResNet50 Feature Extractor  
+↓  
+Global Average Pooling  
+↓  
+Dense Layers  
+↓  
+Softmax Output (7 emotions)
+
+---
+
+# Training Techniques Used
+
+To improve generalization and performance:
+
+- Transfer Learning
+- MixUp Data Augmentation
+- CutMix Data Augmentation
+- Class Weight Balancing
+- Early Stopping
+- MLflow Experiment Tracking
 
 ---
 
 # Experiment Tracking with MLflow
 
-Model training experiments are tracked using **MLflow**.
+MLflow was used for:
 
-MLflow logs:
+- experiment tracking
+- model versioning
+- artifact storage
+- metric logging
+- reproducibility
 
-- model parameters  
-- training metrics  
-- experiment runs  
-- model artifacts  
-- model versioning  
-
-The model is stored in the **MLflow Model Registry** and deployed using alias-based versioning.
-
-Example:
+The final production model was registered as:
 
 ```
 resnet50@production
 ```
-
-This allows the production model to be updated without modifying inference code.
 
 ---
 
 # Features
 
 - Deep learning-based emotion recognition
-- Automatic face detection using MTCNN
-- ResNet50 CNN architecture
-- MLflow experiment tracking and model registry
+- Automatic face detection using **MTCNN**
+- Multiple model experiments
+- **MLflow experiment tracking**
 - Gradio interactive web interface
 - Real-time webcam emotion detection
-- Modular training experiments
+- Hugging Face deployment
 
 ---
 
@@ -130,12 +201,13 @@ project
 ├── requirements.txt
 ├── README.md
 │
-├── training_notebooks
-│   ├── resnet50-model-class-weights.ipynb
-│   ├── resnet50-model-cutmix-mixup.ipynb
+├── notebooks
+│   ├── custom-cnn-model-mlflow.ipynb
 │   ├── convnext-tiny-model-mlflow.ipynb
-│   ├── efficient-net-v2-s-class-weights.ipynb
-│   └── efficient-net-v2-s-mixup-cutmix.ipynb
+│   ├── efficient-net-v2-s-class-weigths.ipynb
+│   ├── efficient-net-v2-s-mixup-cutmix.ipynb
+│   ├── resnet50-model-class-weigths.ipynb
+│   └── resnet50-model-cutmix-mixup.ipynb
 ```
 
 ---
@@ -159,25 +231,25 @@ pip install -r requirements.txt
 
 # Running the Application
 
-Run the Gradio application
+Run the Gradio interface
 
 ```
 python app.py
 ```
 
-The web interface will open in your browser where you can upload images and receive emotion predictions.
+Open the browser and upload an image to predict emotions.
 
 ---
 
 # Real-Time Webcam Emotion Detection
 
-To run the webcam-based emotion recognition system:
+Run:
 
 ```
 python webcam_app.py
 ```
 
-The system will detect faces in real time and display predicted emotions on the video stream.
+The system will detect faces and display predicted emotions on the video stream.
 
 Press **Q** to exit.
 
@@ -188,6 +260,8 @@ Press **Q** to exit.
 - Python
 - TensorFlow / Keras
 - ResNet50
+- EfficientNetV2
+- ConvNeXt
 - MTCNN
 - MLflow
 - OpenCV
@@ -199,10 +273,16 @@ Press **Q** to exit.
 
 # Future Improvements
 
-- Face alignment for improved prediction accuracy
-- Temporal smoothing for video emotion recognition
+- Face alignment
+- Temporal smoothing for video predictions
 - Multi-face emotion tracking
-- Optimized inference pipeline
-- Deployment using Docker and CI/CD pipelines
+- Model quantization for faster inference
+- Dockerized deployment
 
 ---
+
+# Author
+
+Aryan Upadhyay
+
+AI / Machine Learning Developer focused on **Deep Learning, Computer Vision, and MLOps**.
