@@ -1,0 +1,9 @@
+gradio
+tensorflow
+mlflow
+dagshub
+pandas
+numpy
+pillow
+cv2
+mtcnn
